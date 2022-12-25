@@ -14,7 +14,7 @@ public class GameToCompareEntity implements Serializable {
     @Column(name = "sessionId", nullable = false)
     private String sessionId;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, optional = false)
+    @ManyToOne(cascade = {CascadeType.ALL}, optional = false)
     @JoinColumn(name = "game_entity_name", nullable = false)
     private GameEntity game;
 

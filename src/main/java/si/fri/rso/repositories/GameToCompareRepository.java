@@ -1,5 +1,6 @@
 package si.fri.rso.repositories;
 
+import io.quarkus.hibernate.orm.panache.Panache;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import si.fri.rso.entities.GameToCompareEntity;
 
@@ -16,7 +17,14 @@ public class GameToCompareRepository implements PanacheRepository<GameToCompareE
 
     @Transactional
     public GameToCompareEntity createGameToCompare(GameToCompareEntity gameToCompareEntity) {
-        persist(gameToCompareEntity);
+
+        GameToCompareEntity entry = find("sessionId = ?1 and game = ?2", gameToCompareEntity.getSessionId(), gameToCompareEntity.getGame()).firstResult();
+
+        if (entry != null) {
+            return null;
+        }
+
+        Panache.getEntityManager().merge(gameToCompareEntity);
         return gameToCompareEntity;
     }
 

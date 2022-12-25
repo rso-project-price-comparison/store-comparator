@@ -1,13 +1,16 @@
 package si.fri.rso.entities;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "game", schema = "public", catalog = "postgres")
 public class GameEntity implements Serializable {
     @Id
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false)
     private String name;
     @Column(name = "gogId", unique = true)
     private String gogId;
