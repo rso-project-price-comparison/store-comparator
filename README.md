@@ -13,9 +13,16 @@ docker build -f Dockerfile.jvm -t tjasad/rso-store-comparator .
 ```
 
 ## Docker run
+
 ```shell script
 docker run -i --rm -p 8083:8083 tjasad/rso-store-comparator
 ```
 
 ## Dockerhub link
+
 https://hub.docker.com/repository/docker/tjasad/rso-store-comparator
+
+## OpenAPI
+
+http://localhost:8083/q/swagger-ui/
+http://localhost:8083/openapi/
