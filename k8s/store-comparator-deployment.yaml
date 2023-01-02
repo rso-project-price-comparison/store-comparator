@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: store-comparator-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: store-comparator
+  template:
+    metadata:
+      labels:
+        app: store-comparator
+    spec:
+      containers:
+        - image: tjasad/rso-store-comparator:2022-12-25-16-59-42
+          name: store-comparator
+          env:
+            - name: QUARKUS_DATASOURCE_JDBC_URL
+              value: jdbc:postgresql://mel.db.elephantsql.com:5432/hytuietq
+            - name: QUARKUS_DATASOURCE_USERNAME
+              value: hytuietq
+            - name: QUARKUS_DATASOURCE_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: pg-pass
+                  key: QUARKUS_DATASOURCE_PASSWORD
+          resources:
+            limits:
+              memory: 512Mi
+          ports:
+            - containerPort: 8080
+              name: server
+              protocol: TCP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: store-comparator
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 8080
+      protocol: TCP
+      targetPort: server
+  selector:
+    app: store-comparator
