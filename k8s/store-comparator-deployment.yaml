@@ -13,7 +13,7 @@ spec:
         app: store-comparator
     spec:
       containers:
-        - image: tjasad/rso-store-comparator:2022-12-25-16-59-42
+        - image: tjasad/rso-store-comparator:latest
           name: store-comparator
           env:
             - name: QUARKUS_DATASOURCE_JDBC_URL

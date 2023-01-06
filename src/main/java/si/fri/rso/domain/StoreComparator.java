@@ -91,10 +91,10 @@ public class StoreComparator {
 
         // todo logic for score
 
-        if (favouriteStore.equals(StoreEnum.STEAM))
+        if (favouriteStore != null && favouriteStore.equals(StoreEnum.STEAM))
             steamScore += 1;
 
-        if (favouriteStore.equals(StoreEnum.GOG))
+        if (favouriteStore != null && favouriteStore.equals(StoreEnum.GOG))
             gogScore += 1;
 
         gogStoreComparison.setTotalScore(gogScore);

@@ -29,10 +29,6 @@ public class StoreComparatorResourceImpl implements StoreComparatorResource {
         gameToCompareRepository.removeGameToCompare(id);
     }
 
-    //    @Override
-//    public List<GameToCompareEntity> getGameToCompareByUser(String sessionId) {
-//        return gameToCompareRepository.findByUser(sessionId);
-//    }
     public List<StoreComparisonDto> compareStores(String sessionId, StoreEnum favouriteStore) {
         return storeComparator.compareStores(sessionId, favouriteStore);
     }

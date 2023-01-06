@@ -3,13 +3,17 @@
 This project uses Quarkus, the Supersonic Subatomic Java Framework.
 
 ## Run local database
+
 ```shell script
 docker run -it --rm=true --name quarkus_test -e POSTGRES_USER=quarkus_test -e POSTGRES_PASSWORD=quarkus_test -e POSTGRES_DB=quarkus_test -p 5432:5432 postgres:14.1
 ```
 
+#  
+
 ## Docker build
+
 ```shell script
-docker build -f Dockerfile.jvm -t tjasad/rso-store-comparator .
+docker build -f Dockerfile.jvm -docker push tjasad/rso-steam-parsert tjasad/rso-store-comparator .
 ```
 
 ## Docker run
@@ -26,3 +30,7 @@ https://hub.docker.com/repository/docker/tjasad/rso-store-comparator
 
 http://localhost:8083/q/swagger-ui/
 http://localhost:8083/openapi/
+
+## Health checks
+
+http://localhost:8083/q/health/
