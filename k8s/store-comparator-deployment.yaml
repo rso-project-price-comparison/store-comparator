@@ -13,9 +13,11 @@ spec:
         app: store-comparator
     spec:
       containers:
-        - image: tjasad/rso-store-comparator:latest
+        - image: tjasad/rso-store-comparator:2023-01-07-15-18-43
           name: store-comparator
           env:
+            - name: QUARKUS_PROFILE
+              value: production
             - name: QUARKUS_DATASOURCE_JDBC_URL
               value: jdbc:postgresql://mel.db.elephantsql.com:5432/hytuietq
             - name: QUARKUS_DATASOURCE_USERNAME
@@ -40,7 +42,7 @@ kind: Service
 metadata:
   name: store-comparator
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   ports:
     - port: 8080
       protocol: TCP
