@@ -31,6 +31,3 @@ https://hub.docker.com/repository/docker/tjasad/rso-store-comparator
 http://localhost:8083/q/swagger-ui/
 http://localhost:8083/openapi/
 
-## Health checks
-
-http://localhost:8083/q/health/

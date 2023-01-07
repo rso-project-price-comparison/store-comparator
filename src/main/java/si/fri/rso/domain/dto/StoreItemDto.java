@@ -2,6 +2,7 @@ package si.fri.rso.domain.dto;
 
 public class StoreItemDto {
 
+    String gameToCompareId;
     String gameId;
     String name;
     Float price;
@@ -28,5 +29,13 @@ public class StoreItemDto {
 
     public void setPrice(Float price) {
         this.price = price;
+    }
+
+    public String getGameToCompareId() {
+        return gameToCompareId;
+    }
+
+    public void setGameToCompareId(String gameToCompareId) {
+        this.gameToCompareId = gameToCompareId;
     }
 }
