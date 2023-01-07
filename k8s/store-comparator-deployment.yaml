@@ -13,7 +13,7 @@ spec:
         app: store-comparator
     spec:
       containers:
-        - image: tjasad/rso-store-comparator:2023-01-07-15-18-43
+        - image: tjasad/rso-store-comparator:latest
           name: store-comparator
           env:
             - name: QUARKUS_PROFILE
@@ -34,6 +34,12 @@ spec:
             - containerPort: 8080
               name: server
               protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /store-comparator/q/health/ready
+              port: server
+            initialDelaySeconds: 20
+            periodSeconds: 3
 
 ---
 
