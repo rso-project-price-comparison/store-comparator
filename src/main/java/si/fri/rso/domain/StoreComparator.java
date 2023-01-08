@@ -17,9 +17,8 @@ import si.fri.rso.services.dtos.StoreEnum;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 
 @ApplicationScoped
 public class StoreComparator {
@@ -48,72 +47,95 @@ public class StoreComparator {
         List<StoreItemDto> steamStoreItems = new ArrayList<>();
         steamStoreComparison.setStoreItems(steamStoreItems);
 
+        ArrayList<PriceRequest> gogPriceRequest = new ArrayList<>();
+        ArrayList<PriceRequest> steamPriceRequest = new ArrayList<>();
+
         gamesToCompare.forEach(g -> {
             if (g.getGame().getGogId() != null) {
 
-                try {
-                    Optional<GamePriceDto> price = gameDataService.getPrices(Collections.singletonList(new PriceRequest(g.getGame().getGogId(), StoreEnum.GOG))).stream().findFirst();
+                gogPriceRequest.add(new PriceRequest(g.getGame().getGogId(), StoreEnum.GOG));
 
-                    StoreItemDto item = new StoreItemDto();
-                    item.setName(g.getGame().getName());
-                    item.setGameId(g.getGame().getGogId());
-                    item.setGameToCompareId(String.valueOf(g.getId()));
-                    price.ifPresent(p -> item.setPrice(p.finalPrice()));
+                StoreItemDto item = new StoreItemDto();
+                item.setName(g.getGame().getName());
+                item.setGameId(g.getGame().getGogId());
+                item.setGameToCompareId(String.valueOf(g.getId()));
 
-                    if (item.getPrice() == null)
-                        item.setPrice(0.0f);
-
-                    gogStoreItems.add(item);
-                } catch (Exception e) {
-                    // do nothing
-                    log.info(STORE_COMPARISON_MARKER, "Something went wrong when fetching price data from GOG.");
-                }
+                gogStoreItems.add(item);
 
             }
 
             if (g.getGame().getSteamId() != null) {
 
-                try {
-                    Optional<GamePriceDto> price = gameDataService.getPrices(Collections.singletonList(new PriceRequest(g.getGame().getSteamId(), StoreEnum.STEAM))).stream().findFirst();
+                steamPriceRequest.add(new PriceRequest(g.getGame().getSteamId(), StoreEnum.STEAM));
 
-                    StoreItemDto item = new StoreItemDto();
-                    item.setName(g.getGame().getName());
-                    item.setGameId(g.getGame().getSteamId());
-                    item.setGameToCompareId(String.valueOf(g.getId()));
-                    price.ifPresent(p -> item.setPrice(p.finalPrice()));
+                StoreItemDto item = new StoreItemDto();
+                item.setName(g.getGame().getName());
+                item.setGameId(g.getGame().getSteamId());
+                item.setGameToCompareId(String.valueOf(g.getId()));
 
-                    if (item.getPrice() == null)
-                        item.setPrice(0.0f);
-
-                    steamStoreItems.add(item);
-                } catch (Exception e) {
-                    // do nothing
-                    log.info(STORE_COMPARISON_MARKER, "Something went wrong when fetching price data from STEAM.");
-                }
+                steamStoreItems.add(item);
 
             }
 
         });
 
-        // total gog price
-        Float totalGogPrice = gogStoreComparison.getStoreItems()
-                .stream()
-                .map(StoreItemDto::getPrice)
-                .reduce(0.0f, Float::sum);
+        try {
+            // GOG prices
+            List<GamePriceDto> gogPrices = gameDataService.getPrices(gogPriceRequest).stream().toList();
 
-        gogStoreComparison.setTotalPrice(totalGogPrice);
+            gogStoreItems.forEach(g ->
+            {
+                Float finalPrice = gogPrices.stream()
+                        .filter(p -> p.gameId().equals(g.getGameId()))
+                        .map(GamePriceDto::finalPrice)
+                        .findFirst()
+                        .orElse(0.0f);
 
-        // total steam price
-        Float totalSteamPrice = steamStoreComparison.getStoreItems()
-                .stream()
-                .map(StoreItemDto::getPrice)
-                .reduce(0.0f, Float::sum);
+                g.setPrice(finalPrice);
+            });
 
-        steamStoreComparison.setTotalPrice(totalSteamPrice);
+            // STEAM prices
+            List<GamePriceDto> steamPrices = gameDataService.getPrices(steamPriceRequest).stream().toList();
 
-        calculateFinalScores(gogStoreComparison, steamStoreComparison, favouriteStore);
+            steamStoreItems.forEach(g ->
+            {
+                Float finalPrice = steamPrices.stream()
+                        .filter(p -> p.gameId().equals(g.getGameId()))
+                        .map(GamePriceDto::finalPrice)
+                        .findFirst()
+                        .orElse(0.0f);
 
-        return List.of(gogStoreComparison, steamStoreComparison);
+                g.setPrice(finalPrice);
+            });
+
+            // total gog price
+            Float totalGogPrice = gogStoreComparison.getStoreItems()
+                    .stream()
+                    .map(StoreItemDto::getPrice)
+                    .filter(Objects::nonNull)
+                    .reduce(0.0f, Float::sum);
+
+            gogStoreComparison.setTotalPrice(totalGogPrice);
+
+            // total steam price
+            Float totalSteamPrice = steamStoreComparison.getStoreItems()
+                    .stream()
+                    .map(StoreItemDto::getPrice)
+                    .filter(Objects::nonNull)
+                    .reduce(0.0f, Float::sum);
+
+            steamStoreComparison.setTotalPrice(totalSteamPrice);
+
+            calculateFinalScores(gogStoreComparison, steamStoreComparison, favouriteStore);
+
+            return List.of(gogStoreComparison, steamStoreComparison);
+
+        } catch (Exception e) {
+            log.info(STORE_COMPARISON_MARKER, "Something went wrong when fetching price data.");
+            return new ArrayList<>();
+        }
+
+
     }
 
     private void calculateFinalScores(StoreComparisonDto gogStoreComparison, StoreComparisonDto steamStoreComparison, StoreEnum favouriteStore) {
