@@ -13,7 +13,7 @@ spec:
         app: store-comparator
     spec:
       containers:
-        - image: tjasad/rso-store-comparator:latest
+        - image: tjasad/rso-store-comparator:2023-01-08-10-05-25
           name: store-comparator
           env:
             - name: QUARKUS_PROFILE
